@@ -1,0 +1,75 @@
+{
+    "tableName": "results",
+    "tableEntry": {
+        "exp": {
+            "type": "integer",
+            "exist": "not null",
+            "key": true
+        },
+        "model": {
+            "type": "text",
+            "exist": "not null",
+            "key": true
+        },
+        "dataset": {
+            "type": "text",
+            "exist": "not null",
+            "key": true
+        },
+        "nclass": {
+            "type": "integer",
+            "exist": "not null",
+            "key": true
+        },
+        "fold": {
+            "type": "integer",
+            "exist": "not null",
+            "key": true
+        },
+        "acc": {
+            "type": "real",
+            "exist": "",
+            "key": false
+        },
+        "f1micro": {
+            "type": "real",
+            "exist": "",
+            "key": false
+        },
+        "f1macro": {
+            "type": "real",
+            "exist": "",
+            "key": false
+        },
+        "stopepoch": {
+            "type": "integer",
+            "exist": "",
+            "key": false
+        },
+        "bestepoch": {
+            "type": "integer",
+            "exist": "",
+            "key": false
+        },
+        "bestvalacc": {
+            "type": "real",
+            "exist": "",
+            "key": false
+        },
+        "label": {
+            "type": "text",
+            "exist": "",
+            "key": false
+        },
+        "confmx": {
+            "type": "text",
+            "exist": "",
+            "key": false
+        },
+        "time": {
+            "type": "text",
+            "exist": "",
+            "key": false
+        }
+    }
+}
