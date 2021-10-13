@@ -24,11 +24,13 @@ class Summary():
         saved_path = os.path.join('./src/database/', f'Customized_TableEntries_{self.model}.json')
         with open(saved_path, 'r') as fp:
             c_entries = json.load(fp)
+
         return c_entries
 
     def read_database(self):
         results = self.db.get_all_as_dataframe()
-        results = self.sort_keys(results)
+        if results:
+            results = self.sort_keys(results)
         logger.info(f'print database {self.db_name} \n {results}')
         return results
 

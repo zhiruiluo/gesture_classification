@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 logger.info('[summary_all]')
 
 if __name__ == '__main__':
-    db_names = {'exp_TRAN.db':'', 'exp_TRAN_1.db':'TRAN'}
+    db_names = {'exp_TRAN.db':'TRAN'}
     for db_name, model in db_names.items():
         s = Summary(db_name, model)
         s.savedata()

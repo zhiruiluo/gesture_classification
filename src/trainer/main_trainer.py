@@ -82,7 +82,7 @@ def train(args):
     logger.info(f'args: {args}')
     
     # setup database
-    db_name = f'exp_{args.model}_1.db'
+    db_name = f'exp_{args.model}.db'
     c_entreis = customized_entries(args)
     db = DatabaseManager(db_name, c_entreis)
 

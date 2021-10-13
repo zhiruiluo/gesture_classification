@@ -11,9 +11,11 @@ import torch.nn as nn
 from torch.nn.utils.rnn import pad_sequence
 import torch.nn.functional as F
 
-logger = logging.getLogger('model.CNN_TRAN')
+model_name = 'TRAN'
 
-__all__ = ['CNN_TRAN']
+logger = logging.getLogger(f'model.{model_name}')
+
+__all__ = [model_name]
 
 class CNN_BasicBlock(nn.Module):
     def __init__(self, inplanes, planes, kernel, stride, padding=0, pool=True, pooling_type='maxpool', pool_fix_size=False):
