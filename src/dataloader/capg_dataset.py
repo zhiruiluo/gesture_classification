@@ -56,15 +56,21 @@ def shuffle_dataset(data, labels):
 
     return data_shuf, labels_shuf
 
+def slide_window_tensor(tensor: torch.Tensor, dim, win_size, stride):
+    n_tensor = tensor.unfold(dim,win_size,stride).permute(0, 2, 1)
+    return [t for t in n_tensor] 
+
 class CapgDataset(BaseDataset):
-    def __init__(self) -> None:
+    def __init__(self, winsize, stride) -> None:
         super().__init__()
         self.data_path = '../data/'
+        self.winsize = winsize
+        self.stride = stride
         self._load()
 
     @property
     def key_name(self):
-        return 'CapgDataset'
+        return f'CapgDataset_{self.winsize}_{self.stride}'
 
     def _load(self):
         self.data, self.labels = load_mat('capgdataset',data_path=self.data_path)
@@ -72,6 +78,17 @@ class CapgDataset(BaseDataset):
 
         self.input_shape = self.data[0].shape
         self._to_tensor()
+        self._seperate_by_trial()
+
+    def _seperate_by_trial(self):
+        new_data = []
+        new_label = []
+        for d, l in zip(self.data,self.labels):
+            window_data = slide_window_tensor(d, 0, self.winsize, self.stride)
+            new_data.extend(window_data)
+            new_label.extend([l]*len(window_data))
+        self.data = new_data
+        self.labels = new_label
 
     def __len__(self):
         return len(self.data)

@@ -23,9 +23,11 @@ def collate_fn(batch):
     return X, label
 
 class CapgDataLoader(pl.LightningDataModule):
-    def __init__(self, dataname, batch_size=32, nfold=10,shuffle=True,deterministic=True,num_workers=8,embedding=False):
+    def __init__(self, dataname,winsize,stride,batch_size=32,nfold=10,shuffle=True,deterministic=True,num_workers=8,embedding=False):
         super().__init__()
         self.dataname = dataname
+        self.winsize = winsize
+        self.stride = stride
         self.batch_size=batch_size
         self.nfold = nfold
         self.shuffle = shuffle
@@ -40,11 +42,10 @@ class CapgDataLoader(pl.LightningDataModule):
     
     def setup(self):
         logger.info('setup dataloader')
-        dataset = CapgDataset()
+        dataset = CapgDataset(self.winsize, self.stride)
         self.dss = DatasetSpliter(dataset, dataset.key_name, strategy='tvt', nfold=self.nfold, deterministic=self.determ)
         self.dss.setup()
         self.nclass = dataset.nclass
-        self.nc = 1
         self.class_to_index = dataset.class_to_index
         self.input_shape = dataset.input_shape
         self.nfold = self.dss.nfold

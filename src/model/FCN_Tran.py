@@ -158,12 +158,14 @@ class Transformer(nn.Module):
 class TRAN(nn.Module):
     def __init__(self, 
         nclass, 
+        nc, 
         batch_size,
         pool,
         num_layers,
     ):
         super().__init__()
         self.nclass = nclass
+        self.nc = nc
         self.batch_size = batch_size
         self.num_layers = num_layers
         self.pool = pool
@@ -174,10 +176,10 @@ class TRAN(nn.Module):
         #     nn.Linear(10, dim),
         # )
 
-        # self.embedding = nn.Sequential(
-        #     nn.Linear(128, 64),
-        #     nn.BatchNorm1d(1000),
-        # )
+        self.embedding = nn.Sequential(
+            nn.Linear(128, 64),
+            nn.BatchNorm1d(1000),
+        )
 
         dim = 128
         
@@ -190,6 +192,7 @@ class TRAN(nn.Module):
             nn.Linear(dim, nclass)
         )
 
+
     def make_classifier(self, hidden_size, nclass, layer_num=1):
         layers = []
         sz = hidden_size
@@ -197,7 +200,7 @@ class TRAN(nn.Module):
         for l in range(layer_num-1):
             layers += [nn.Linear(sz, sz//2)]
             layers += [nn.ReLU(True)]
-            layers += [nn.Dropout(0.5)]
+            layers += [nn.Dropout()]
             sz //= 2
         
         layers += [nn.Dropout(0.5)]

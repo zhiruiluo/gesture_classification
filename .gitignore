@@ -139,3 +139,5 @@ tensorboard_logs/
 *.ckpt
 *.csv
 *.db
+slurm/slurm_out/
+log_analysis/

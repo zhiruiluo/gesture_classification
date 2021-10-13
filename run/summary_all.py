@@ -18,7 +18,8 @@ logger.setLevel(logging.INFO)
 logger.info('[summary_all]')
 
 if __name__ == '__main__':
-    db_names = ['exp_TRAN.db']
-    for db_name in db_names:
-        s = Summary(db_name)
+    db_names = {'exp_TRAN.db':'', 'exp_TRAN_1.db':'TRAN'}
+    for db_name, model in db_names.items():
+        s = Summary(db_name, model)
         s.savedata()
+        s.get_average_folds()

@@ -1,0 +1,12 @@
+{
+    "winsize": {
+        "type": "integer",
+        "exist": "not null",
+        "key": true
+    },
+    "stride": {
+        "type": "integer",
+        "exist": "not null",
+        "key": true
+    }
+}

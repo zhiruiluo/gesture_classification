@@ -37,7 +37,12 @@ def test():
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
-    train(args)
+
+    try:
+        train(args)
+    except Exception as e:
+        logger.error(f"Error: {e}",stack_info=True)
+
     
 
 if __name__ == '__main__':
