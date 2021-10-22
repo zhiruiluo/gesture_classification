@@ -8,6 +8,7 @@ import json
 from src.database.DatabaseManager import DatabaseManager
 from src.dataloader.capg_dataloader import CapgDataLoader
 from src.model.Tran import TRAN
+from src.model.MSFCN_ATTN import get_msfcnattn
 from src.trainer.base_trainer import (BaseTrainer, get_trainer,
                                       setup_earlystop, setup_modelcheckpoint)
 from src.util.cuda_status import get_num_gpus
@@ -82,7 +83,8 @@ def train(args):
     logger.info(f'args: {args}')
     
     # setup database
-    db_name = f'exp_{args.model}.db'
+    model_name = args.model.split('_')[0]
+    db_name = f'exp_{model_name}.db'
     c_entreis = customized_entries(args)
     db = DatabaseManager(db_name, c_entreis)
 
@@ -139,9 +141,9 @@ def add_trainer_parameter(parser):
                             help='Batch size')
     parser.add_argument('--nfold', type=int, default=10, help='nfold cross-validation', choices=[5,10])
     
-
 def add_experiment_parameter(parser):
-    parser.add_argument('--model', type=str, default='TRAN', choices=['TRAN'])
+    parser.add_argument('--model', type=str, default='TRAN', choices=['TRAN','MSFCN_SEVT_P1','MSFCN_SEVT_P2',
+                    'MSFCN_SEVT_S1','MSFCN_SEVT_S2'])
     parser.add_argument('--exp', type=int, default=1,
                             help='Unique experiment number')
     parser.add_argument('--dataset', type=str, default='CapgDataset', help='dataset ', 
@@ -149,20 +151,31 @@ def add_experiment_parameter(parser):
     parser.add_argument('--fold', type=int, default=0,
                             help='The fold number for current training')
     parser.add_argument('--nclass', type=int, default=2)
-    parser.add_argument('--winsize', type=int, default=50)
-    parser.add_argument('--stride', type=int, default=10)
+
+def add_customized_parameter(model, parser):
+    model = model.split('_')[0]
+    logger.info(model)
+    if model in ['TRAN', 'MSFCN']:
+        parser.add_argument('--winsize', type=int, default=50)
+        parser.add_argument('--stride', type=int, default=10)
 
 def customized_entries(args):
-    c_entries = {
-        'winsize': {'type':'integer', 'exist':'not null', 'key': True},
-        'stride': {'type':'integer', 'exist':'not null','key':True},
-    }
-    save_to_path = os.path.join('./src/database/', f'Customized_TableEntries_{args.model}.json')
+    model = args.model.split('_')[0]
+    if model in ['TRAN', 'MSFCN']:
+        c_entries = {
+            'winsize': {'type':'integer', 'exist':'not null', 'key': True},
+            'stride': {'type':'integer', 'exist':'not null','key':True},
+        }
+
+    write_customized_entries(args,c_entries)
+    return c_entries
+
+def write_customized_entries(args, c_entries):
+    model = args.model.split('_')[0]
+    save_to_path = os.path.join('./src/database/', f'Customized_TableEntries_{model}.json')
     if not os.path.isfile(save_to_path):
         with open(save_to_path,'w') as fp:
             json.dump(c_entries,fp,indent=4)
-
-    return c_entries
 
 def get_custmoized_entry_dict(args, results_dict):
     args_dict = vars(args)
@@ -182,11 +195,16 @@ def add_system_parameter(parser):
                             help='Debug flag')
 
 def setup_arg():
+    model_parser = argparse.ArgumentParser(add_help=False)
+    model_parser.add_argument('--model', type=str)
+    model = model_parser.parse_known_args()[0].model
+
     parser = argparse.ArgumentParser()
     add_system_parameter(parser)
     add_model_hyperparameter(parser)
     add_experiment_parameter(parser)
     add_trainer_parameter(parser)
+    add_customized_parameter(model, parser)
     return parser.parse_args()
 
 
@@ -196,8 +214,10 @@ class MainTrainer(BaseTrainer):
         self.args = args
         self.class_to_index = class_to_index
         
-        if args.model == 'TRAN':
+        argu = args.model.split('_')
+        if argu[0] == 'TRAN':
             self.model = TRAN(self.args.nclass,batch_size=self.args.batch_size,
                             pool=args.pool, num_layers=self.args.num_layers)
-        else:
-            pass
+        elif argu[0] == 'MSFCN':
+            self.model = get_msfcnattn(attn_layer=argu[1], attn_param={'structure':argu[2]},nclass=args.nclass,inplane=1,num_layers=args.num_layers)
+        

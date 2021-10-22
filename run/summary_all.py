@@ -18,7 +18,13 @@ logger.setLevel(logging.INFO)
 logger.info('[summary_all]')
 
 if __name__ == '__main__':
-    db_names = {'exp_TRAN.db':'TRAN'}
+    db_names = {}
+    for fn in os.listdir('src/database/'):
+        if fn.endswith('.db') and fn.startswith('exp') and 'test' not in fn and 'grid' not in fn:
+            
+            model = fn.replace('.db','').split('_')[1]
+            db_names[fn] = model
+    print(db_names)
     for db_name, model in db_names.items():
         s = Summary(db_name, model)
         s.savedata()

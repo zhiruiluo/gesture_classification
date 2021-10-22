@@ -29,7 +29,7 @@ class Summary():
 
     def read_database(self):
         results = self.db.get_all_as_dataframe()
-        if results:
+        if results is not None:
             results = self.sort_keys(results)
         logger.info(f'print database {self.db_name} \n {results}')
         return results

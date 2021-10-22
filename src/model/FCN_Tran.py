@@ -1,8 +1,8 @@
 import sys
+sys.path.append('.')
+
 from einops import rearrange, repeat
 from einops.layers.torch import Rearrange
-
-sys.path.append('.')
 
 import logging
 

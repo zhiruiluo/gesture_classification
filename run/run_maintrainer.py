@@ -5,6 +5,7 @@ cur_path = Path(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(str(cur_path.parent))
 import logging
 import time
+import traceback
 
 def setup_logger(model):
     logger = logging.getLogger()
@@ -40,10 +41,9 @@ def test():
 
     try:
         train(args)
-    except Exception as e:
-        logger.error(f"Error: {e}",stack_info=True)
+    except Exception:
+        logger.error(f"Error: {traceback.format_exc()}")
 
-    
 
 if __name__ == '__main__':
     test()
